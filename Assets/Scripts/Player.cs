@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -15,12 +13,18 @@ public class Player : MonoBehaviour
     private Vector3 _walkSpeed => _movement * _moveSpeed;
     private Vector3 _boostSpeed => _movement * _moveSpeed * _boostMultiplier;
 
-    private string _isRunning = "isRunning";
+    private string _isRunning = "isRunning";    
+    private bool _finish;
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
         _rb = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        _finish = false;
     }
 
     private void Update()
@@ -36,6 +40,12 @@ public class Player : MonoBehaviour
 
     private void MoveBody()
     {
+        if (_finish)
+        {
+            _rb.velocity = Vector3.zero;
+            return;
+        }
+
         Vector3 targetSpeed = Input.GetKey(KeyCode.LeftShift) ? _boostSpeed : _walkSpeed;
         _rb.velocity = targetSpeed;
         
@@ -60,6 +70,10 @@ public class Player : MonoBehaviour
         _movement = new Vector3(verticalInput, 0f, -horizontalInput).normalized;
     }
 
-
+    public void Finish(string animation)
+    {
+        _finish = true;
+        _animator.SetTrigger(animation);
+    }
 
 }
